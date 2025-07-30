@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - SoulNotes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B7ED8 0%, #7C6ED4 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-outline {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #7C6ED4;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .intro-text {
+            font-size: 1.3rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid rgba(124, 110, 212, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(124, 110, 212, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            color: #7C6ED4;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .main-description {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: #7C6ED4;
+            font-weight: 600;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, #7C6ED4 0%, #8B7ED8 100%);
+            border-radius: 20px;
+            color: white;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .cta-text {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 40px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: #7C6ED4;
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .main-container {
+                padding: 20px 15px;
+            }
+            
+            .content-card {
+                padding: 30px 20px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">SoulNotes</a>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link">Home</a></li>
+                    <li><a href="#" class="nav-link active">About</a></li>
+                    <li><a href="#" class="nav-link">Features</a></li>
+                    <li><a href="#" class="nav-link">How It Works</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-outline">Login</a>
+                    <a href="#" class="btn btn-primary">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <div class="content-card">
+            <h1 class="page-title">About SoulNotes</h1>
+            
+            <p class="intro-text">Transform your thoughts into meaningful stories with AI-powered journaling</p>
+            
+            <div class="main-description">
+                <span class="highlight">SoulNotes</span> is your personal digital journal designed to help you capture your thoughts, reflect on your emotions, and transform everyday moments into meaningful stories. With SoulNotes, you can write and save personal notes anytime, organize them by mood — whether you're feeling happy, motivated, nostalgic, or even a bit down — and let our intelligent AI agent weave your notes into inspiring stories, poems, or motivational reflections.
+            </div>
+            
+            <div class="main-description">
+                SoulNotes makes journaling more than just writing — it's a space where your words grow into something more. Want to relive your happiest moments? Gather your joyful notes and craft your own happiness story. Need a motivational boost? Select your inspiring memories and let SoulNotes remind you of your strength.
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3 class="feature-title">Capture Your Thoughts</h3>
+                    <p class="feature-description">Write and save personal notes anytime, anywhere. Your thoughts are always safe and accessible.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3 class="feature-title">Organize by Mood</h3>
+                    <p class="feature-description">Sort your notes by emotions - happy, motivated, nostalgic, or reflective moments.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Stories</h3>
+                    <p class="feature-description">Let our intelligent AI weave your notes into inspiring stories, poems, and reflections.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3 class="feature-title">Voice Agent</h3>
+                    <p class="feature-description">Listen to your AI-crafted stories with our voice agent for a more personal experience.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Private & Secure</h3>
+                    <p class="feature-description">Your notes are always yours - safe, private, and easy to manage.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3 class="feature-title">Mindful Growth</h3>
+                    <p class="feature-description">A space for mindful pauses, creative outlets, and keeping thoughts alive and growing.</p>
+                </div>
+            </div>
+            
+            <div class="main-description">
+                To make your reflections even more personal, SoulNotes includes a voice agent that reads your AI-crafted stories aloud — so you can listen, reflect, and feel supported anytime. Your notes are always yours: safe, private, and easy to manage. SoulNotes is designed for anyone who wants a mindful pause, a creative outlet, or simply a safe space to keep thoughts alive and growing.
+            </div>
+            
+            <div class="tagline">
+                Capture. Reflect. Create. Be inspired — with SoulNotes.
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Begin Your Journey?</h2>
+            <p class="cta-text">Join thousands of users who have transformed their thoughts into meaningful stories</p>
+            <a href="#" class="cta-button">Start Your Journal Today</a>
+        </div>
+    </div>
+</body>
+</html>
