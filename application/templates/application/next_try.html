@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent - SoulNotes</title>
+</head>
+<body>
+    <h1>AI Agent</h1>
+    <a href="{% url 'add_note' %}">Back to Notes</a> | <a href="{% url 'home' %}">Home</a>
+
+    {% if notes %}
+    <form method="POST" id="ai-form">
+        {% csrf_token %}
+        
+        <!-- Step 1: Select Mood -->
+        <h3>Step 1: Choose Your Mood</h3>
+        <div>
+            <input type="radio" id="general" name="mood" value="General" onchange="enableStep2()">
+            <label for="general">General</label><br>
+            
+            <input type="radio" id="happy" name="mood" value="Happy" onchange="enableStep2()">
+            <label for="happy">Happy</label><br>
+            
+            <input type="radio" id="hopeful" name="mood" value="Hopeful" onchange="enableStep2()">
+            <label for="hopeful">Hopeful</label><br>
+            
+            <input type="radio" id="reflective" name="mood" value="Reflective" onchange="enableStep2()">
+            <label for="reflective">Reflective</label><br>
+            
+            <input type="radio" id="motivation" name="mood" value="Motivation" onchange="enableStep2()">
+            <label for="motivation">Motivation</label><br>
+            
+            <input type="radio" id="calm" name="mood" value="Calm" onchange="enableStep2()">
+            <label for="calm">Calm</label><br>
+            
+            <input type="radio" id="dramatic" name="mood" value="Dramatic" onchange="enableStep2()">
+            <label for="dramatic">Dramatic</label><br>
+            
+            <input type="radio" id="funny" name="mood" value="Funny" onchange="enableStep2()">
+            <label for="funny">Funny</label><br>
+        </div>
+
+        <!-- Step 2: Select Notes -->
+        <div id="step2" style="display:none;">
+            <h3>Step 2: Select Your Notes</h3>
+            {% for note in notes %}
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+                <input type="checkbox" name="selected_notes" value="{{ note.id }}" id="note_{{ note.id }}" onchange="enableStep3()">
+                <label for="note_{{ note.id }}">
+                    <strong>{{ note.note_title }}</strong><br>
+                    {{ note.note_description|truncatechars:100 }}<br>
+                    <small>{{ note.date|date:"M d, Y" }}</small>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Step 3: Additional Information -->
+        <div id="step3" style="display:none;">
+            <h3>Step 3: Additional Information</h3>
+            
+            <label for="extra_details">Additional Details (Optional):</label><br>
+            <textarea name="extra_details" id="extra_details" rows="4" cols="50" placeholder="Add any specific instructions..."></textarea><br><br>
+            
+            <label for="output_format">Output Format:</label>
+            <select name="output_format" id="output_format">
+                <option value="paragraph">Paragraph</option>
+                <option value="story">Story</option>
+                <option value="poem">Poem</option>
+                <option value="letter">Letter</option>
+                <option value="journal_entry">Journal Entry</option>
+                <option value="summary">Summary</option>
+            </select><br><br>
+            
+            <button type="submit" id="generate-btn">Generate AI Content</button>
+        </div>
+    </form>
+
+    {% if output_text %}
+    <div style="border: 2px solid #333; padding: 20px; margin: 20px 0; background-color: #f9f9f9;">
+        <h3>AI Generated Content:</h3>
+        <div style="margin-bottom: 15px;">
+            <button type="button" id="speak-btn" onclick="speakText()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🔊 Speak</button>
+            <button type="button" id="pause-btn" onclick="pauseSpeech()" style="padding: 8px 15px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">⏸️ Pause</button>
+            <button type="button" id="stop-btn" onclick="stopSpeech()" style="padding: 8px 15px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">⏹️ Stop</button>
+            <button type="button" id="resume-btn" onclick="resumeSpeech()" style="padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">▶️ Resume</button>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label for="voice-select">Voice:</label>
+            <select id="voice-select" style="margin-right: 10px; padding: 5px;">
+                <option value="">Default</option>
+            </select>
+            <label for="speed-control">Speed:</label>
+            <input type="range" id="speed-control" min="0.5" max="2" step="0.1" value="1" style="margin-right: 10px;">
+            <span id="speed-value">1.0</span>
+            <label for="pitch-control" style="margin-left: 15px;">Pitch:</label>
+            <input type="range" id="pitch-control" min="0.5" max="2" step="0.1" value="1" style="margin-right: 10px;">
+            <span id="pitch-value">1.0</span>
+        </div>
+        <p id="output-text" style="white-space: pre-wrap;">{{ output_text }}</p>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <h2>No Notes Found</h2>
+    <p>You don't have any notes yet. <a href="{% url 'add_note' %}">Create your first note</a> to get started!</p>
+    {% endif %}
+
+    <script>
+        // Speech Synthesis variables
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let isPaused = false;
+
+        function enableStep2() {
+            const moodSelected = document.querySelector('input[name="mood"]:checked');
+            const step2 = document.getElementById('step2');
+            
+            if (moodSelected) {
+                step2.style.display = 'block';
+            } else {
+                step2.style.display = 'none';
+                document.getElementById('step3').style.display = 'none';
+            }
+        }
+
+        function enableStep3() {
+            const notesSelected = document.querySelectorAll('input[name="selected_notes"]:checked');
+            const step3 = document.getElementById('step3');
+            
+            if (notesSelected.length > 0) {
+                step3.style.display = 'block';
+            } else {
+                step3.style.display = 'none';
+            }
+        }
+
+        // Form validation
+        document.getElementById('ai-form').addEventListener('submit', function(e) {
+            const moodSelected = document.querySelector('input[name="mood"]:checked');
+            const notesSelected = document.querySelectorAll('input[name="selected_notes"]:checked');
+            
+            if (!moodSelected) {
+                e.preventDefault();
+                alert('Please select a mood first.');
+                return;
+            }
+            
+            if (notesSelected.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one note.');
+                return;
+            }
+        });
+
+        // TTS Functions
+        function loadVoices() {
+            const voiceSelect = document.getElementById('voice-select');
+            const voices = speechSynthesis.getVoices();
+            
+            // Clear existing options (keep default)
+            voiceSelect.innerHTML = '<option value="">Default</option>';
+            
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        function speakText() {
+            const outputText = document.getElementById('output-text').textContent;
+            const voiceSelect = document.getElementById('voice-select');
+            const speedControl = document.getElementById('speed-control');
+            const pitchControl = document.getElementById('pitch-control');
+            
+            if (!outputText) {
+                alert('No text to speak!');
+                return;
+            }
+
+            // Stop any current speech
+            speechSynthesis.cancel();
+            
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(outputText);
+            
+            // Set voice if selected
+            if (voiceSelect.value !== '') {
+                const voices = speechSynthesis.getVoices();
+                currentUtterance.voice = voices[voiceSelect.value];
+            }
+            
+            // Set rate and pitch
+            currentUtterance.rate = parseFloat(speedControl.value);
+            currentUtterance.pitch = parseFloat(pitchControl.value);
+            
+            // Event listeners
+            currentUtterance.onstart = function() {
+                document.getElementById('speak-btn').textContent = '🔊 Speaking...';
+                document.getElementById('speak-btn').disabled = true;
+                isPaused = false;
+            };
+            
+            currentUtterance.onend = function() {
+                document.getElementById('speak-btn').textContent = '🔊 Speak';
+                document.getElementById('speak-btn').disabled = false;
+                isPaused = false;
+            };
+            
+            currentUtterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+                document.getElementById('speak-btn').textContent = '🔊 Speak';
+                document.getElementById('speak-btn').disabled = false;
+                alert('Error occurred during speech synthesis: ' + event.error);
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function pauseSpeech() {
+            if (speechSynthesis.speaking && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+            }
+        }
+
+        function resumeSpeech() {
+            if (speechSynthesis.speaking && isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+            }
+        }
+
+        function stopSpeech() {
+            speechSynthesis.cancel();
+            document.getElementById('speak-btn').textContent = '🔊 Speak';
+            document.getElementById('speak-btn').disabled = false;
+            isPaused = false;
+        }
+
+        // Update speed and pitch display values
+        document.getElementById('speed-control').addEventListener('input', function() {
+            document.getElementById('speed-value').textContent = this.value;
+        });
+
+        document.getElementById('pitch-control').addEventListener('input', function() {
+            document.getElementById('pitch-value').textContent = this.value;
+        });
+
+        // Initialize TTS when page loads
+        window.addEventListener('load', function() {
+            // Load voices when available
+            if (speechSynthesis.getVoices().length > 0) {
+                loadVoices();
+            }
+            
+            // Load voices when they become available (some browsers load them asynchronously)
+            speechSynthesis.addEventListener('voiceschanged', loadVoices);
+            
+            // Check if TTS is supported
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-Speech is not supported in your browser.');
+                document.getElementById('speak-btn').disabled = true;
+                document.getElementById('pause-btn').disabled = true;
+                document.getElementById('stop-btn').disabled = true;
+                document.getElementById('resume-btn').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
