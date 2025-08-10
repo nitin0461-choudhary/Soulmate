@@ -24,4 +24,5 @@ urlpatterns = [
     path('terms_of_service/',terms_of_service,name='terms_of_service'),
     path('privacy_policy/',privacy_policy,name='privacy_policy'),
     path('application/',include('application.urls')),
-]
+    path('auth/',include('authentication.urls')),
+]   

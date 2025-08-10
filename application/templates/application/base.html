@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Note Taking App{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'add_note' %}">Add Note</a> |
+        <a href="{% url 'ai_agent' %}">AI Agent</a> |
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

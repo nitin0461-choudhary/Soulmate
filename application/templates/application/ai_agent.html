@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent - SoulNotes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B7ED8 0%, #7C6ED4 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0 100px;
+            color: white;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Form Styling */
+        .ai-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            margin: 40px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .form-step {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(124, 110, 212, 0.05);
+            border-radius: 20px;
+            border: 2px solid rgba(124, 110, 212, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-step.active {
+            border-color: rgba(124, 110, 212, 0.3);
+            background: rgba(124, 110, 212, 0.1);
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #7C6ED4;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #7C6ED4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Mood Selection */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .mood-option {
+            position: relative;
+        }
+
+        .mood-option input[type="radio"] {
+            display: none;
+        }
+
+        .mood-label {
+            display: block;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid rgba(124, 110, 212, 0.2);
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .mood-label:hover {
+            border-color: rgba(124, 110, 212, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .mood-option input[type="radio"]:checked + .mood-label {
+            background: #7C6ED4;
+            color: white;
+            border-color: #7C6ED4;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 110, 212, 0.3);
+        }
+
+        /* Notes Selection */
+        .notes-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            background: white;
+            border: 2px solid rgba(124, 110, 212, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .note-card:hover {
+            border-color: rgba(124, 110, 212, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-card.selected {
+            border-color: #7C6ED4;
+            background: rgba(124, 110, 212, 0.05);
+            box-shadow: 0 10px 20px rgba(124, 110, 212, 0.2);
+        }
+
+        .note-card input[type="checkbox"] {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .note-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #7C6ED4;
+            margin-bottom: 10px;
+            margin-right: 30px;
+        }
+
+        .note-description {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .note-date {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* Additional Information */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #7C6ED4;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(124, 110, 212, 0.2);
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #7C6ED4;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(124, 110, 212, 0.2);
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #7C6ED4;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #7C6ED4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #6B5DC2;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 110, 212, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(124, 110, 212, 0.1);
+            color: #7C6ED4;
+            border: 2px solid rgba(124, 110, 212, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(124, 110, 212, 0.2);
+            border-color: #7C6ED4;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            margin: 40px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .output-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #7C6ED4;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(124, 110, 212, 0.05);
+            border-radius: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: #7C6ED4;
+        }
+
+        .range-input {
+            width: 80px;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(124, 110, 212, 0.3);
+            outline: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #7C6ED4;
+            cursor: pointer;
+        }
+
+        .output-text {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(124, 110, 212, 0.1);
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        /* No Notes Message */
+        .no-notes {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 60px 40px;
+            margin: 40px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .no-notes h2 {
+            font-size: 2.5rem;
+            color: #7C6ED4;
+            margin-bottom: 20px;
+        }
+
+        .no-notes p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-step, .output-section, .no-notes {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .mood-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .audio-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-group {
+                justify-content: space-between;
+            }
+
+            .ai-form,
+            .output-section,
+            .no-notes {
+                padding: 25px;
+            }
+        }
+
+        /* Hidden elements */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">SoulNotes</a>
+                <ul class="nav-links">
+                                   <ul class="nav-links">
+                    <li><a href="{% url 'home' %}" class="nav-link active">Home</a></li>
+                    <li><a href="{% url 'about'  %}" class="nav-link">About</a></li>
+                    <li><a href="{% url 'add_note' %}" class="nav-link">Add Note</a></li>
+                    <li><a href="{% url 'ai_agent' %}" class="nav-link">AI Agent</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="{% url 'logout_page' %}" class="btn btn-outline">Logout</a>
+                    
+                </div>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h1 class="page-title">AI Story Generator</h1>
+            <p class="page-subtitle">Transform your thoughts into beautiful stories, poems, and reflections with the power of AI</p>
+
+            {% if notes %}
+            <form method="POST" id="ai-form" class="ai-form">
+                {% csrf_token %}
+                
+                <!-- Step 1: Select Mood -->
+                <div class="form-step active" id="step1">
+                    <h3 class="step-title">
+                        <span class="step-number">1</span>
+                        Choose Your Mood
+                    </h3>
+                    <div class="mood-grid">
+                        <div class="mood-option">
+                            <input type="radio" id="general" name="mood" value="General" onchange="enableStep2()">
+                            <label for="general" class="mood-label">✨ General</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="happy" name="mood" value="Happy" onchange="enableStep2()">
+                            <label for="happy" class="mood-label">😊 Happy</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="hopeful" name="mood" value="Hopeful" onchange="enableStep2()">
+                            <label for="hopeful" class="mood-label">🌅 Hopeful</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="reflective" name="mood" value="Reflective" onchange="enableStep2()">
+                            <label for="reflective" class="mood-label">🤔 Reflective</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="motivation" name="mood" value="Motivation" onchange="enableStep2()">
+                            <label for="motivation" class="mood-label">💪 Motivation</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="calm" name="mood" value="Calm" onchange="enableStep2()">
+                            <label for="calm" class="mood-label">🧘 Calm</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="dramatic" name="mood" value="Dramatic" onchange="enableStep2()">
+                            <label for="dramatic" class="mood-label">🎭 Dramatic</label>
+                        </div>
+                        <div class="mood-option">
+                            <input type="radio" id="funny" name="mood" value="Funny" onchange="enableStep2()">
+                            <label for="funny" class="mood-label">😂 Funny</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Notes -->
+                <div class="form-step hidden" id="step2">
+                    <h3 class="step-title">
+                        <span class="step-number">2</span>
+                        Select Your Notes
+                    </h3>
+                    <div class="notes-grid">
+                        {% for note in notes %}
+                        <div class="note-card" onclick="toggleNoteSelection(this)">
+                            <input type="checkbox" name="selected_notes" value="{{ note.id }}" id="note_{{ note.id }}" onchange="enableStep3()">
+                            <div class="note-title">{{ note.note_title }}</div>
+                            <div class="note-description">{{ note.note_description|truncatechars:150 }}</div>
+                            <div class="note-date">{{ note.date|date:"M d, Y" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Step 3: Additional Information -->
+                <div class="form-step hidden" id="step3">
+                    <h3 class="step-title">
+                        <span class="step-number">3</span>
+                        Additional Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label for="extra_details" class="form-label">Additional Details (Optional):</label>
+                        <textarea name="extra_details" id="extra_details" class="form-textarea" placeholder="Add any specific instructions or themes you'd like the AI to focus on..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="output_format" class="form-label">Output Format:</label>
+                        <select name="output_format" id="output_format" class="form-select">
+                            <option value="paragraph">Paragraph</option>
+                            <option value="story">Story</option>
+                            <option value="poem">Poem</option>
+                            <option value="letter">Letter</option>
+                            <option value="journal_entry">Journal Entry</option>
+                            <option value="summary">Summary</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="generate-btn">✨ Generate AI Content</button>
+                </div>
+            </form>
+
+            {% if output_text %}
+            <div class="output-section">
+                <h3 class="output-title">🎭 Your AI Generated Story</h3>
+                <div class="audio-controls">
+                    <button type="button" class="btn btn-primary" id="speak-btn" onclick="speakText()">🔊 Speak</button>
+                    <button type="button" class="btn btn-secondary" id="pause-btn" onclick="pauseSpeech()">⏸️ Pause</button>
+                    <button type="button" class="btn btn-secondary" id="resume-btn" onclick="resumeSpeech()">▶️ Resume</button>
+                    <button type="button" class="btn btn-secondary" id="stop-btn" onclick="stopSpeech()">⏹️ Stop</button>
+                    
+                    <div class="control-group">
+                        <label for="voice-select" class="control-label">Voice:</label>
+                        <select id="voice-select" class="form-select" style="width: auto; padding: 8px 12px;">
+                            <option value="">Default</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="speed-control" class="control-label">Speed:</label>
+                        <input type="range" id="speed-control" class="range-input" min="0.5" max="2" step="0.1" value="1">
+                        <span id="speed-value">1.0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="pitch-control" class="control-label">Pitch:</label>
+                        <input type="range" id="pitch-control" class="range-input" min="0.5" max="2" step="0.1" value="1">
+                        <span id="pitch-value">1.0</span>
+                    </div>
+                </div>
+                <div class="output-text" id="output-text">{{ output_text }}</div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="no-notes">
+                <h2>✍️ No Notes Found</h2>
+                <p>You don't have any notes yet. Create your first note to start generating AI stories!</p>
+                <a href="{% url 'add_note' %}" class="btn btn-primary">Create Your First Note</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Speech Synthesis variables
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let isPaused = false;
+
+        function enableStep2() {
+            const moodSelected = document.querySelector('input[name="mood"]:checked');
+            const step2 = document.getElementById('step2');
+            const step1 = document.getElementById('step1');
+            
+            if (moodSelected) {
+                step2.classList.remove('hidden');
+                step2.classList.add('active');
+                step1.classList.remove('active');
+            } else {
+                step2.classList.add('hidden');
+                step2.classList.remove('active');
+                document.getElementById('step3').classList.add('hidden');
+                document.getElementById('step3').classList.remove('active');
+            }
+        }
+
+        function enableStep3() {
+            const notesSelected = document.querySelectorAll('input[name="selected_notes"]:checked');
+            const step3 = document.getElementById('step3');
+            const step2 = document.getElementById('step2');
+            
+            if (notesSelected.length > 0) {
+                step3.classList.remove('hidden');
+                step3.classList.add('active');
+                step2.classList.remove('active');
+            } else {
+                step3.classList.add('hidden');
+                step3.classList.remove('active');
+            }
+        }
+
+        function toggleNoteSelection(card) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+            
+            enableStep3();
+        }
+
+        // Form validation
+        document.getElementById('ai-form').addEventListener('submit', function(e) {
+            const moodSelected = document.querySelector('input[name="mood"]:checked');
+            const notesSelected = document.querySelectorAll('input[name="selected_notes"]:checked');
+            
+            if (!moodSelected) {
+                e.preventDefault();
+                alert('Please select a mood first.');
+                return;
+            }
+            
+            if (notesSelected.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one note.');
+                return;
+            }
+
+            // Show loading state
+            const generateBtn = document.getElementById('generate-btn');
+            generateBtn.textContent = '⏳ Generating...';
+            generateBtn.disabled = true;
+        });
+
+        // TTS Functions
+        function loadVoices() {
+            const voiceSelect = document.getElementById('voice-select');
+            const voices = speechSynthesis.getVoices();
+            
+            // Clear existing options (keep default)
+            voiceSelect.innerHTML = '<option value="">Default</option>';
+            
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+
+        function speakText() {
+            const outputText = document.getElementById('output-text').textContent;
+            const voiceSelect = document.getElementById('voice-select');
+            const speedControl = document.getElementById('speed-control');
+            const pitchControl = document.getElementById('pitch-control');
+            
+            if (!outputText) {
+                alert('No text to speak!');
+                return;
+            }
+
+            // Stop any current speech
+            speechSynthesis.cancel();
+            
+            // Create new utterance
+            currentUtterance = new SpeechSynthesisUtterance(outputText);
+            
+            // Set voice if selected
+            if (voiceSelect.value !== '') {
+                const voices = speechSynthesis.getVoices();
+                currentUtterance.voice = voices[voiceSelect.value];
+            }
+            
+            // Set rate and pitch
+            currentUtterance.rate = parseFloat(speedControl.value);
+            currentUtterance.pitch = parseFloat(pitchControl.value);
+            
+            // Event listeners
+            currentUtterance.onstart = function() {
+                document.getElementById('speak-btn').textContent = '🔊 Speaking...';
+                document.getElementById('speak-btn').disabled = true;
+                isPaused = false;
+            };
+            
+            currentUtterance.onend = function() {
+                document.getElementById('speak-btn').textContent = '🔊 Speak';
+                document.getElementById('speak-btn').disabled = false;
+                isPaused = false;
+            };
+            
+            currentUtterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+                document.getElementById('speak-btn').textContent = '🔊 Speak';
+                document.getElementById('speak-btn').disabled = false;
+                alert('Error occurred during speech synthesis: ' + event.error);
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function pauseSpeech() {
+            if (speechSynthesis.speaking && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+            }
+        }
+
+        function resumeSpeech() {
+            if (speechSynthesis.speaking && isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+            }
+        }
+
+        function stopSpeech() {
+            speechSynthesis.cancel();
+            document.getElementById('speak-btn').textContent = '🔊 Speak';
+            document.getElementById('speak-btn').disabled = false;
+            isPaused = false;
+        }
+
+        // Update speed and pitch display values
+        document.getElementById('speed-control').addEventListener('input', function() {
+            document.getElementById('speed-value').textContent = this.value;
+        });
+
+        document.getElementById('pitch-control').addEventListener('input', function() {
+            document.getElementById('pitch-value').textContent = this.value;
+        });
+
+        // Initialize TTS when page loads
+        window.addEventListener('load', function() {
+            // Load voices when available
+            if (speechSynthesis.getVoices().length > 0) {
+                loadVoices();
+            }
+            
+            // Load voices when they become available (some browsers load them asynchronously)
+            speechSynthesis.addEventListener('voiceschanged', loadVoices);
+            
+            // Check if TTS is supported
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-Speech is not supported in your browser.');
+                const buttons = ['speak-btn', 'pause-btn', 'stop-btn', 'resume-btn'];
+                buttons.forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = true;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
