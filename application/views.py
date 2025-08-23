@@ -145,7 +145,7 @@ def ai_agent(request):
         )
         prompt = PromptTemplate(
             input_variables=["format", "notes", "extra"],
-            template="Create a {format} using these mood-specific notes: {notes}. Additional details: {extra}"
+            template="Create a {format} using these mood-specific notes: {notes} also write in mentioned language English . Additional details: {extra}"
         )
         chain = LLMChain(llm=llm, prompt=prompt)
         output_text = chain.run(format=output_format, notes=notes_text, extra=extra_details)
