@@ -25,7 +25,7 @@ def Login_views(req):
             matched_user = Login_model.objects.filter(
                 name=inp_name, email=inp_email
             ).first()
-
+            
             if matched_user and check_password(inp_password, matched_user.password):
                 # Save session
                 req.session['User_id'] = matched_user.id
