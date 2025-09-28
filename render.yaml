@@ -4,11 +4,17 @@ services:
     env: python
     plan: free
     region: frankfurt
+    # If your manage.py is not in the repo root, set rootDir
+    # rootDir: .    # (keep as '.' if manage.py is at repo root)
+
     buildCommand: |
-      pip install -r requirements.txt
+      python -m pip install --upgrade pip
+      pip install Django gunicorn whitenoise dj-database-url psycopg2-binary python-dotenv
       python manage.py migrate --noinput
       python manage.py collectstatic --noinput
+
     startCommand: gunicorn Note_taking_project.wsgi:application --workers=2 --threads=4 --timeout=120
+
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
