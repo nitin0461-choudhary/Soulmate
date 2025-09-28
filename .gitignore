@@ -92,3 +92,6 @@ Thumbs.db
 # Node (if any frontend)
 node_modules/
 dist/
+.env
+.env*
+application/.env
