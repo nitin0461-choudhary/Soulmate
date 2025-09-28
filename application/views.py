@@ -15,9 +15,7 @@ from .models import (
 )
 import os,re,json
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+
 from .prompts import General_mood_extractor
 from openai import AzureOpenAI
 from .prompts_combine import Master_combine
