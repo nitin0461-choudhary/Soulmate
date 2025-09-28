@@ -1,0 +1,94 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.sqlite3
+*.log
+
+# Virtual Environment
+venv/
+ENV/
+.env/
+.venv/
+*.env
+
+# ======================
+# Django
+# ======================
+*.pot
+*.pyc
+*.db
+db.sqlite3
+media/
+staticfiles/
+*.mo
+
+# Django logs
+*.log
+*.pot
+*.pyc
+*.py.class
+
+# ======================
+# OS Specific
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# IDE / Editor
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# Caches
+# ===================== == 
+*.egg-info/
+.eggs/
+.cache/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+
+# ======================
+# Other
+# ======================
+__MACOSX/
+*.bak
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual envs
+venv/
+.env/
+.venv/
+
+# Django
+staticfiles/
+media/
+db.sqlite3
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node (if any frontend)
+node_modules/
+dist/
